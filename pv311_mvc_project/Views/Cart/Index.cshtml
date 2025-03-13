@@ -1,0 +1,158 @@
+﻿@model CartVM
+
+@if (Model != null && Model.Items.Count() > 0)
+{
+    <section class="h-100 h-custom" style="background-color: #343a40; color: #f8f9fa;">
+        <div class="container py-5">
+            <div class="row d-flex justify-content-center align-items-start">
+                <div class="col-12 col-lg-8">
+
+                    <!-- Cart Items Table -->
+                    <div class="table-responsive mb-4">
+                        <table class="table table-hover table-dark rounded-3 overflow-hidden">
+                            <thead class="bg-pink text-light">
+                                <tr>
+                                    <th scope="col" class="h5">Назва</th>
+                                    <th scope="col">На складі</th>
+                                    <th scope="col">К-сть</th>
+                                    <th scope="col">Ціна</th>
+                                    <th scope="col">Дія</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr class="align-middle">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="~/images/products/@(item.Product.Image ?? "productDefault.png")" class="img-fluid rounded-3 shadow-sm"
+                                                     style="width: 80px;" alt="@item.Product.Name">
+                                                <div class="ms-3">
+                                                    <p class="mb-0 fw-bold">@item.Product.Name</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">@item.Product.Amount</td>
+                                        <td>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <button class="btn btn-outline-secondary btn-sm shadow-sm" onclick="decreaseQuantity('@item.Product.Id', @item.Quantity)">
+                                                    <i class="bi bi-dash-circle-fill"></i>
+                                                </button>
+                                                <input type="number" value="@item.Quantity" class="form-control form-control-sm text-center border-0" min="1" max="@item.Product.Amount" style="width: 60px; background-color: #495057; color: #f8f9fa;" />
+                                                <button class="btn btn-outline-secondary btn-sm shadow-sm" onclick="increaseQuantity('@item.Product.Id', @item.Quantity)">
+                                                    <i class="bi bi-plus-circle-fill"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">@item.Product.Price₴</td>
+                                        <td class="text-center">
+                                            <button class="btn btn-danger btn-sm shadow-sm" onclick="removeItem('@item.Product.Id')">Видалити</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Checkout Summary -->
+                    <div class="card shadow-lg border-0 bg-dark text-light rounded-3">
+                        <div class="card-body p-4">
+                            <h4 class="text-pink mb-3">Резюме замовлення</h4>
+                            <hr class="my-3 border-light" />
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Вартість товарів</span>
+                                <span>@Model.TotalPrice₴</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Знижка</span>
+                                <span>@Model.Discount%</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Із знижкою</span>
+                                <span>@Model.TotalPriceWithDiscount</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Вартість доставки</span>
+                                <span>@Model.Shipping₴</span>
+                            </div>
+                            <div class="d-flex justify-content-between h5 text-pink">
+                                <span>Загальна сума</span>
+                                <span>@((Model.TotalPriceWithDiscount + Model.Shipping).ToString("F2"))₴</span>
+                            </div>
+
+                            <div class="input-group my-3">
+                                <input type="text" class="form-control form-control-sm bg-secondary text-light border-0" id="promoCode" placeholder="Промокод">
+                                <button class="btn btn-pink btn-sm" onclick="activatePromoCode(document.getElementById('promoCode').value)">Активувати</button>
+                            </div>
+
+                            <h5 class="text-pink mt-4">Спосіб оплати</h5>
+                            <div class="d-flex flex-column">
+                                <label class="form-check-label text-light">
+                                    <input class="form-check-input me-2" type="radio" name="paymentMethod" value="creditCard" checked /> Кредитна картка
+                                </label>
+                                <label class="form-check-label text-light">
+                                    <input class="form-check-input me-2" type="radio" name="paymentMethod" value="debitCard" /> Дебетова картка
+                                </label>
+                                <label class="form-check-label text-light">
+                                    <input class="form-check-input me-2" type="radio" name="paymentMethod" value="paypal" /> PayPal
+                                </label>
+                            </div>
+
+                            <form asp-action="Checkout" method="post">
+                                <button type="submit" class="btn btn-pink btn-lg w-100 mt-3">Оформити замовлення</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+else
+{
+    <h1 class="text-center text-light">Кошик порожній</h1>
+}
+
+@section Scripts {
+    <script>
+        function activatePromoCode(promoCode) {
+            if (promoCode) {
+                alert("Промокод активовано: " + promoCode);
+                // Додатковий код для відправки промокоду на сервер або застосування знижки
+            }
+        }
+    </script>
+}
+
+<style>
+    .btn-pink {
+        background-color: #f28fb1;
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn-pink:hover {
+            background-color: #f06c96;
+            transform: scale(1.05);
+        }
+
+    .text-pink {
+        color: #f28fb1;
+    }
+
+    .table tbody tr:hover {
+        background-color: #fce0e6;
+    }
+
+    .btn-danger:hover {
+        background-color: #f06c96;
+        border-color: #f06c96;
+        transform: scale(1.05);
+    }
+
+    .card:hover, .btn:hover {
+        transform: scale(1.03);
+    }
+</style>

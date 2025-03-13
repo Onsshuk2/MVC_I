@@ -1,0 +1,196 @@
+﻿@inject IHttpContextAccessor HttpContextAccesor
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - pv311_mvc_project</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/pv311_mvc_project.styles.css" asp-append-version="true" />
+    <style>
+        /* Загальний стиль сторінки */
+        body {
+            background-color: #200B31;
+            color: #e0e0e0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Заголовок та навігація */
+        header {
+            background-color: #3D0D35;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar {
+            padding: 1rem;
+        }
+
+        .navbar-brand, .nav-link {
+            color: #fff !important;
+            transition: color 0.3s ease;
+            font-weight: bold; /* Жирний текст для навігації */
+        }
+
+            .nav-link:hover {
+                color: #A51935;
+            }
+
+        .navbar-toggler-icon {
+            background-color: #fff;
+        }
+
+        .navbar-collapse {
+            justify-content: space-between;
+        }
+
+        .navbar-nav .nav-item {
+            margin-left: 1rem;
+        }
+
+        /* Картка кошика */
+        .bi-cart-fill {
+            color: #A51935;
+        }
+
+        .navbar-nav .text-end {
+            margin-left: auto;
+        }
+
+        /* Футер */
+        footer {
+            background-color: #3D0D35;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+
+            footer a {
+                color: #A51935;
+                text-decoration: none;
+            }
+
+                footer a:hover {
+                    text-decoration: underline;
+                }
+
+        /* Стилі для елементів на головній сторінці */
+        .container {
+            padding-top: 30px;
+        }
+
+        .card {
+            background-color: #541033;
+            border: 1px solid #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            }
+
+        /* Кнопки */
+        .btn {
+            background-color: #731536;
+            color: #fff;
+            transition: background-color 0.3s ease;
+            font-weight: bold; /* Жирний текст на кнопках */
+        }
+
+            .btn:hover {
+                background-color: #8E1737;
+            }
+
+        /* Підсвітка активних елементів */
+        .active {
+            color: #A51935 !important;
+        }
+
+        /* Збільшення контрасту для важливих елементів */
+        h1, h2, h3, h4, h5, h6 {
+            color: #fff;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Тінь для заголовків */
+        }
+
+        /* Збільшення контрасту для тексту в основному контенті */
+        p, li, a {
+            color: #fff;
+            line-height: 1.6;
+        }
+
+        /* Стиль для блоків з важливим контентом */
+        .important-text {
+            color: #A51935;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">pv311_mvc_project</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1 d-flex">
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Головна</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Info">Info</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Product" asp-action="Index">Товари</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Category" asp-action="Index">Категорії</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="AddToAdmin">Зробити адміном</a>
+                        </li>
+                        <li class="nav-item flex-grow-1 text-end">
+                            <a class="nav-link text-white" asp-area="" asp-controller="Cart" asp-action="Index">
+                                <i class="bi bi-cart-fill"></i>(@CartService.GetCount(HttpContextAccesor.HttpContext))
+                            </a>
+                        </li>
+                    </ul>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2025 - pv311_mvc_project - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+        tinymce.init({
+          selector: '#tinyeditor',
+          license_key: 'gpl|1uqtscayd6yoj8amtn58u7jtdveb35cw36ksjkv62p74a8qt'
+        });
+    </script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
