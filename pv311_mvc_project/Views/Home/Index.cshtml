@@ -12,6 +12,13 @@
             {
                 <a href="@Url.Action("Index", new { category = category.Name })" class="btn btn-success mx-1">@category.Name</a>
             }
+
+            <!-- Кнопки для адміністраторів -->
+            @if (Model.IsAdmin)
+            {
+                <a href="@Url.Action("Products", "Admin")" class="btn btn-primary mx-1">Товари</a>
+                <a href="@Url.Action("Categories", "Admin")" class="btn btn-primary mx-1">Категорії</a>
+            }
         </div>
         <div class="row">
             @foreach (var item in Model.Products)
@@ -21,7 +28,7 @@
                         <a class="text-decoration-none" asp-action="Details" asp-route-id="@item.Product.Id">
                             <div class="text-center">
                                 <img src="~/images/products/@(item.Product.Image ?? "productDefault.png")"
-                                width="200px" alt="@item.Product.Name" />
+                                     width="200px" alt="@item.Product.Name" />
                             </div>
                         </a>
                         <div class="card-body">
@@ -39,7 +46,7 @@
                             </div>
 
                             <div class="d-flex justify-content-between mb-2">
-                                @if(item.Product.Amount > 0)
+                                @if (item.Product.Amount > 0)
                                 {
                                     <p class="text-muted mb-0">В наявності: <span class="fw-bold">@item.Product.Amount</span></p>
                                 }
@@ -49,7 +56,7 @@
                                 }
                             </div>
                             <div class="text-start">
-                                @if(item.Product.Amount > 0)
+                                @if (item.Product.Amount > 0)
                                 {
                                     @if (item.InCart)
                                     {

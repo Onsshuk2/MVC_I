@@ -9,5 +9,6 @@ namespace pv311_mvc_project.ViewModels
         public int Page { get; set; } = 1;
         public int PagesCount { get; set; }
         public string Category { get; set; } = "";
+        public bool IsAdmin { get; set; }
     }
 }

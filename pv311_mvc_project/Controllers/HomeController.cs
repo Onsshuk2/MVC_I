@@ -33,31 +33,7 @@ namespace pv311_mvc_project.Controllers
             _signinManger = signinManger;
         }
 
-        public IActionResult Index(string? category = "", int page = 1)
-        {
-            int pageSize = 12;
-
-            var products = string.IsNullOrEmpty(category)
-                    ? _productRepository.Products.OrderByDescending(p => p.Amount).AsEnumerable()
-                    : _productRepository.GetByCategory(category).Include(p => p.Category).OrderByDescending(p => p.Amount).AsEnumerable();
-
-            int pagesCount = (int)Math.Ceiling(products.Count() / (double)pageSize);
-            page = page <= 0 || page > pagesCount ? 1 : page;
-            products = products.Skip((page - 1) * pageSize).Take(pageSize);
-
-            var cartItems = _cartService.GetItems().Select(i => i.ProductId);
-
-            var viewModel = new HomeProductsListVM
-            {
-                Products = products.Select(p => new HomeProductItemVM { Product = p, InCart = cartItems.Contains(p.Id) }),
-                Categories = _categoryRepository.GetAll(),
-                Page = page,
-                PagesCount = pagesCount,
-                Category = category ?? ""
-            };
-
-            return View(viewModel);
-        }
+       
 
         [ActionName("Details")]
         public IActionResult ProductDetails(string? id)
@@ -112,5 +88,44 @@ namespace pv311_mvc_project.Controllers
 
             return RedirectToAction("Index");
         }
+        public async Task<IActionResult> IndexAsync(string? category = "", int page = 1)
+        {
+            int pageSize = 12;
+
+            var products = string.IsNullOrEmpty(category)
+                    ? _productRepository.Products.OrderByDescending(p => p.Amount).AsEnumerable()
+                    : _productRepository.GetByCategory(category).Include(p => p.Category).OrderByDescending(p => p.Amount).AsEnumerable();
+
+            int pagesCount = (int)Math.Ceiling(products.Count() / (double)pageSize);
+            page = page <= 0 || page > pagesCount ? 1 : page;
+            products = products.Skip((page - 1) * pageSize).Take(pageSize);
+
+            var cartItems = _cartService.GetItems().Select(i => i.ProductId);
+
+            // ?????????, ?? ????????????? ??????????
+            var user = await _userManger.GetUserAsync(User);
+            bool isAdmin = false;
+
+            if (user != null)
+            {
+                // ???? ?????????? ?????????????, ??????????? ???? ????
+                isAdmin = await _userManger.IsInRoleAsync(user, "admin");
+            }
+
+            var viewModel = new HomeProductsListVM
+            {
+                Products = products.Select(p => new HomeProductItemVM { Product = p, InCart = cartItems.Contains(p.Id) }),
+                Categories = _categoryRepository.GetAll(),
+                Page = page,
+                PagesCount = pagesCount,
+                Category = category ?? "",
+                IsAdmin = isAdmin
+            };
+
+            return View(viewModel);
+        }
+
+
+
     }
 }
